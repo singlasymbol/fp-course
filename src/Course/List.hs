@@ -163,12 +163,15 @@ filter fn = foldRight (\elem auxList -> (if fn elem then elem :. auxList else au
 -- prop> \x -> (x ++ y) ++ z == x ++ (y ++ z)
 --
 -- prop> \x -> x ++ Nil == x
+
+-- foldLeft :: (b -> a -> b) -> b -> List a -> b
+-- foldRight :: (a -> b -> b) -> b -> List a -> b
+
 (++) ::
   List a
   -> List a
   -> List a
-(++) =
-  error "todo: Course.List#(++)"
+(++) fList sList = foldRight (\elem auxList -> elem :. auxList) sList fList
 
 infixr 5 ++
 
