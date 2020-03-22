@@ -237,11 +237,22 @@ flattenAgain = flatMap id
 --
 -- >>> seqOptional (Empty :. map Full infinity)
 -- Empty
+
+-- foldLeft :: (b -> a -> b) -> b -> List a -> b
+-- foldRight :: (a -> b -> b) -> b -> List a -> b
+-- data Optional = 
+
+-- TODO: infinity not working
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional =
-  error "todo: Course.List#seqOptional"
+seqOptional Nil = Empty
+seqOptional listOpt = foldRight (\(optVal :: Optional b) (counter :: (Optional (List b))) ->
+                                case (counter, optVal) of
+                                  ((Full a1), (Full a2)) -> Full (a2 :. a1)
+                                  (_ , _) -> Empty
+                                ) (Full Nil) listOpt
+
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -259,12 +270,17 @@ seqOptional =
 --
 -- >>> find (const True) infinity
 -- Full 0
+
+-- infinity not working!
 find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
+find fn = foldLeft (\counter elem ->
+                     case counter of
+                      Empty -> if fn elem then Full elem else Empty
+                      Full val -> Full val
+                      ) Empty
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -279,11 +295,17 @@ find =
 --
 -- >>> lengthGT4 infinity
 -- True
+
+-- TODO : Make this better!
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+lengthGT4 list = do 
+  let (_, res) = foldLeft (\(counter, boolean) _ -> do 
+                    let x = counter + 1
+                    if x > 4 then (x, True) else (x, False)
+                    ) (0, False) list
+  res
 
 -- | Reverse a list.
 --
